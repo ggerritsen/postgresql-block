@@ -52,5 +52,19 @@ func main() {
 	}
 	fmt.Printf("Successfully queried record with id %d: %+v\n", id, record)
 
+	if err := repo.Delete(id); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Deleted record with id %d\n", id)
+
+	record, err = repo.QueryByID(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if record != nil {
+		fmt.Printf("Expected no record with %d anymore, but it still exists: %q\n", id, record)
+	}
+	fmt.Printf("Verified deletion of record with id %d\n", id)
+
 	fmt.Printf("End of demonstration.\n")
 }

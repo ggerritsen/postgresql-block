@@ -51,7 +51,11 @@ func (r *repository) QueryByID(id int) (*Record, error) {
 	row := r.db.QueryRow(q, id)
 
 	var name string
-	if err := row.Scan(&name); err != nil {
+	err := row.Scan(&name)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
 		return nil, err
 	}
 
@@ -91,6 +95,16 @@ func (r *repository) Insert(name string) (int, error) {
 func (r *repository) Update(id int, updatedName string) error {
 	q := "UPDATE records SET name = $1 WHERE id = $2;"
 	_, err := r.db.Exec(q, updatedName, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Delete removes the record with the specified id
+func (r *repository) Delete(id int) error {
+	q := "DELETE FROM records WHERE id = $1;"
+	_, err := r.db.Exec(q, id)
 	if err != nil {
 		return err
 	}
