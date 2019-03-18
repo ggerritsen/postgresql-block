@@ -3,28 +3,54 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 )
 
 func main() {
-	c := &Client{
-		Host:     "localhost",
-		Port:     5432,
-		User:     "postgres",
-		Password: "your-password",
-		Dbname:   "template1",
-	}
+	fmt.Printf("Start of demonstration.\n")
 
-	db, err := c.Connect()
+	repo, err := NewRepositoryWithDb("localhost", "postgres", "your-password", "template1", 5432)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer repo.Close()
+	fmt.Printf("Connected to database\n")
 
-	fmt.Printf("Initialized database\n")
+	if err := repo.CreateTable(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Table created\n")
 
-	s, err := Query(db, "SELECT * FROM users LIMIT 1;")
+	recordName := "testRecord"
+	id, err := repo.Insert(recordName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Retrieved %q from db\n", s)
+	fmt.Printf("Inserted record with id %d\n", id)
+
+	record, err := repo.QueryByID(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if record.name != recordName {
+		log.Fatal("Record in DB (%q) doesn't match expectation (%q)\n", record.name, recordName)
+	}
+	fmt.Printf("Successfully queried record with id %d: %+v\n", id, record)
+
+	updatedName := fmt.Sprintf("record-%d", time.Now().Unix())
+	if err := repo.Update(id, updatedName); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Updated record with id %d\n", id)
+
+	record, err = repo.QueryByID(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if record.name != updatedName {
+		log.Fatal("Record in DB (%q) doesn't match expectation (%q)\n", record.name, updatedName)
+	}
+	fmt.Printf("Successfully queried record with id %d: %+v\n", id, record)
+
+	fmt.Printf("End of demonstration.\n")
 }
