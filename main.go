@@ -33,7 +33,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if record.name != recordName {
-		log.Fatal("Record in DB (%q) doesn't match expectation (%q)\n", record.name, recordName)
+		log.Fatalf("Record in DB (%q) doesn't match expectation (%q)\n", record.name, recordName)
 	}
 	fmt.Printf("Successfully queried record with id %d: %+v\n", id, record)
 
@@ -48,7 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if record.name != updatedName {
-		log.Fatal("Record in DB (%q) doesn't match expectation (%q)\n", record.name, updatedName)
+		log.Fatalf("Record in DB (%q) doesn't match expectation (%q)\n", record.name, updatedName)
 	}
 	fmt.Printf("Successfully queried record with id %d: %+v\n", id, record)
 
