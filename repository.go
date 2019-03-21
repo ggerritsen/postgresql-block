@@ -80,11 +80,11 @@ func (r *repository) CreateTable() error {
 }
 
 // Insert inserts a record with the specified name and returns the id of the newly inserted record
-func (r *repository) Insert(name string) (int, error) {
+func (r *repository) Insert(rec *Record) (int, error) {
 	q := "INSERT INTO records (name) VALUES ($1) RETURNING id;"
 
 	var id int
-	if err := r.db.QueryRow(q, name).Scan(&id); err != nil {
+	if err := r.db.QueryRow(q, rec.name).Scan(&id); err != nil {
 		return -1, err
 	}
 

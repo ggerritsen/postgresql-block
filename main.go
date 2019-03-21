@@ -21,8 +21,8 @@ func main() {
 	}
 	fmt.Printf("Table created\n")
 
-	recordName := "testRecord"
-	id, err := repo.Insert(recordName)
+	r := &Record{name: "testRecord"}
+	id, err := repo.Insert(r)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,8 +32,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if record.name != recordName {
-		log.Fatalf("Record in DB (%q) doesn't match expectation (%q)\n", record.name, recordName)
+	if record.name != r.name {
+		log.Fatalf("Record in DB (%q) doesn't match expectation (%q)\n", record.name, r.name)
 	}
 	fmt.Printf("Successfully queried record with id %d: %+v\n", id, record)
 
